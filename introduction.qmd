@@ -1,59 +1,8 @@
 ---
-title: "Tools for Reproducible Research"
-subtitle: "Introduction"
-format: revealjs
+title: "Reproducible Research ![](https://phdcomics.com/comics/archive/phd031214s.gif){fig-align=center}"
+format:
+    nbis-revealjs: default
 ---
-
-## Course content
-
-::: {.incremental}
-- Good practices for working with data
-
-- How to use the version control system [Git]{.green} to track changes to code
-
-- How to use the package and environment manager [Conda]{.green}
-
-- How to use the workflow managers [Snakemake]{.green} and [Nextflow]{.green}
-
-- How to generate automated reports using [Quarto]{.green} and [Jupyter]{.green}
-
-- How to use [Docker]{.green} and [Apptainer]{.green} to distribute
-  containerised computational environments
-:::
-
-## The Teachers
-
-::: {.justify-center}
-![John Sundh](images/john-sundh.png)
-
-![Erik Fasterius](images/erik-fasterius.png)
-:::
-
-## What is NBIS?
-
-::: {.smaller}
-[National Bioinformatics Infrastructure Sweden]{.green}
-:::
-
-::: {.incremental}
- - A distributed national bioinformatics infrastructure supporting life sciences
-   in Sweden
- - Provides hands-on bioinformatic support, training, infrastructure and a weekly
-   drop-in
- - Situated throughout Sweden
- - Provides wide-spectrum support in the fields of bioinformatics, bioimage
-   informatics, data management, imaging AI, development of systems and tools as
-   well as national compute resources.
- - Read more at [nbis.se](https://nbis.se/)
-:::
-
-## What is reproducibility? {.nostretch}
-
-<br>
-<br>
-<br>
-
-![](https://phdcomics.com/comics/archive/phd031214s.gif){fig-align=center}
 
 ## Why all the talk about reproducibility?
 
@@ -97,7 +46,7 @@ was estimated at $28 billion in the US. ^[*"The Economics of Reproducibility in 
 :::: {.columns}
 
 ::: {.column}
-In 2016, 1,576 scientists were surveyed about reproducibility. ^[*"1,500 scientists lift the lid on reproducibility". Nature 533: 452–454 (2016)*]
+In 2016, 1576 scientists were surveyed about reproducibility. ^[*"1,500 scientists lift the lid on reproducibility". Nature 533: 452–454 (2016)*]
 
 ::: {.small}
 - 90% agreed that there is a 'slight' or 'significant' reproducibility crisis
@@ -128,12 +77,12 @@ data$ymin = c(0, head(data$ymax, n = -1))
 
 # Make the plot
 library("ggplot2")
-survey_plot <- ggplot(data, aes(stat = "identity",
-                                ymax = ymax,
-                                ymin = ymin,
-                                xmax = 4,
-                                xmin = 3,
-                                fill = category)) +
+ggplot(data, aes(stat = "identity",
+                 ymax = ymax,
+                 ymin = ymin,
+                 xmax = 4,
+                 xmin = 3,
+                 fill = category)) +
    geom_rect() +
    scale_fill_manual(values = c("#d7d7d5", "#6695b9", "#ef9b9a", "#e05656")) +
    coord_polar(theta = "y") +
@@ -237,11 +186,9 @@ More examples:
 :::
 
 :::{.fragment}
-
 - Missing dependencies
 - Missing variables
 - Incorrect file/directory structure
-
 :::
 
 ## Implications for research
@@ -293,7 +240,7 @@ More examples:
 :::
 
 ::: {.fragment fragment-index=2}
-![](../../pages/images/reproducibility_overview.png){width=600px}
+![](images/reproducibility_overview.png){width=600px}
 :::
 
 :::
@@ -395,6 +342,14 @@ you: [Introduction to Data Management Practices]{.green}*
 
 - Faster resumption of research by others (or, more likely, your future self)
 - Increased visibility in the scientific community
+:::
+
+## The Teachers
+
+::: {layout-ncol=2 .justify-center}
+![John Sundh](images/john-sundh.png)
+
+![Erik Fasterius](images/erik-fasterius.png)
 :::
 
 # Questions?
