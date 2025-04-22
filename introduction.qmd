@@ -1,0 +1,400 @@
+---
+title: "Tools for Reproducible Research"
+subtitle: "Introduction"
+format: revealjs
+---
+
+## Course content
+
+::: {.incremental}
+- Good practices for working with data
+
+- How to use the version control system [Git]{.green} to track changes to code
+
+- How to use the package and environment manager [Conda]{.green}
+
+- How to use the workflow managers [Snakemake]{.green} and [Nextflow]{.green}
+
+- How to generate automated reports using [Quarto]{.green} and [Jupyter]{.green}
+
+- How to use [Docker]{.green} and [Apptainer]{.green} to distribute
+  containerised computational environments
+:::
+
+## The Teachers
+
+::: {.justify-center}
+![John Sundh](images/john-sundh.png)
+
+![Erik Fasterius](images/erik-fasterius.png)
+:::
+
+## What is NBIS?
+
+::: {.smaller}
+[National Bioinformatics Infrastructure Sweden]{.green}
+:::
+
+::: {.incremental}
+ - A distributed national bioinformatics infrastructure supporting life sciences
+   in Sweden
+ - Provides hands-on bioinformatic support, training, infrastructure and a weekly
+   drop-in
+ - Situated throughout Sweden
+ - Provides wide-spectrum support in the fields of bioinformatics, bioimage
+   informatics, data management, imaging AI, development of systems and tools as
+   well as national compute resources.
+ - Read more at [nbis.se](https://nbis.se/)
+:::
+
+## What is reproducibility? {.nostretch}
+
+<br>
+<br>
+<br>
+
+![](https://phdcomics.com/comics/archive/phd031214s.gif){fig-align=center}
+
+## Why all the talk about reproducibility?
+
+:::: {.columns}
+
+::: {.column}
+In 2015 the _Open Science Collaboration_ set out to replicate 100 experiments
+published in high-impact psychology journals. ^[*"Estimating the reproducibility of psychological science". Science349, aac4716 (2015)*]
+
+<br>
+
+::: {.small}
+- Less than 50% of the experiments could be replicated
+- Effect sizes were significantly smaller in the replicated studies
+:::
+:::
+
+::: {.column}
+![](images/reproducibility-study-1.jpg)
+:::
+
+::::
+
+## Why all the talk about reproducibility?
+
+:::: {.columns}
+
+::: {.column}
+The same year, money spent on preclinical research that could not be reproduced
+was estimated at $28 billion in the US. ^[*"The Economics of Reproducibility in Preclinical Research". PLOS Biology 16(4): e1002626 (2015)*]
+:::
+
+::: {.column}
+![](https://journals.plos.org/plosbiology/article/figure/image?size=large&id=10.1371/journal.pbio.1002165.g002)
+:::
+
+::::
+
+## Why all the talk about reproducibility?
+
+:::: {.columns}
+
+::: {.column}
+In 2016, 1,576 scientists were surveyed about reproducibility. ^[*"1,500 scientists lift the lid on reproducibility". Nature 533: 452–454 (2016)*]
+
+::: {.small}
+- 90% agreed that there is a 'slight' or 'significant' reproducibility crisis
+:::
+:::
+
+::: {.column}
+```{r plot survey}
+#| echo: false
+#| fig-width: 30
+#| fig-height: 30
+# Create test data
+categories <- c(
+    "Don't know",
+    "No, there is no crisis",
+    "Yes, a slight crisis",
+    "Yes, a significant crisis"
+)
+data <- data.frame(category = factor(categories, levels = categories),
+                   count = c(7, 3, 38, 52))
+
+# Compute the cumulative percentages (top of each rectangle)
+data <- data[order(data$category), ]
+data$ymax = cumsum(data$count)
+
+# Compute the bottom of each rectangle
+data$ymin = c(0, head(data$ymax, n = -1))
+
+# Make the plot
+library("ggplot2")
+survey_plot <- ggplot(data, aes(stat = "identity",
+                                ymax = ymax,
+                                ymin = ymin,
+                                xmax = 4,
+                                xmin = 3,
+                                fill = category)) +
+   geom_rect() +
+   scale_fill_manual(values = c("#d7d7d5", "#6695b9", "#ef9b9a", "#e05656")) +
+   coord_polar(theta = "y") +
+   xlim(c(2, 4)) +
+   geom_text(aes(label = paste0(round(count / sum(count) * 100, 1), "%"),
+                 y = (ymin + ymax) / 2,
+                 x = 3.5),
+             color = "black", size = 20) +
+   theme_void() +
+   theme(legend.title = element_text(size = 70),
+         legend.text  = element_text(size = 50)) +
+   labs(fill = 'Is there a\nreproducibility crisis?')
+```
+:::
+
+::::
+
+## Why all the talk about reproducibility?
+
+:::: {.columns}
+
+::: {.column}
+In 2016, 1,576 scientists were surveyed about reproducibility. ^[*"1,500 scientists lift the lid on reproducibility". Nature 533: 452–454(2016)*]
+
+::: {.small}
+- 90% agreed that there is a 'slight' or 'significant' reproducibility crisis
+- Failure to reproduce experiments is a problem across all domains of science
+:::
+:::
+
+::: {.column}
+![](images/reproducibility-study-2.jpg){width=70%}
+:::
+
+::::
+
+## Reproducibility in computational research
+
+:::: {.columns}
+
+::: {.column}
+In 2018, Stodden _et al_ estimated the reproducibility rate of computational
+papers published in the journal _Science_. ^[*An empirical analysis of journal policy effectiveness for computational reproducibility, Proc. Natl. Acad. Sci. U.S.A. 115 (11) 2584-2589 (2018)*]
+
+::: {.small}
+- Only 26% of the studies were estimated to be reproducible
+- Failure to reproduce was mainly due to lack of data and code
+- Stricter journal guidelines gave improvement but were insufficient
+:::
+:::
+
+::: {.column}
+```{r Plot Stodden Table 4}
+#| echo: false
+#| fig-width: 10
+#| fig-height: 8
+library(gtable)
+items = c(
+    "manual data wrangling", # 5
+    "expertise required", # 5
+    "resource demanding", # 14
+    "software/hardware", # 18 + 14
+    "missing code" # 23+5+5
+)
+table4 <- data.frame(
+    result = factor(items, levels = items),
+    value  = c(5, 5, 14, 32, 33)
+)
+ggplot(
+    table4, aes(y = result, x = value)) +
+    geom_bar(stat = "identity", fill = "#95b540", color = "black") +
+    theme(plot.margin = unit(c(1, 1, 1, 1), 'cm'),
+          axis.text.y = element_text(size=14)) +
+    guides(fill = guide_legend(reverse = TRUE)) +
+    geom_text(aes(label = paste0(value, "%")),
+              hjust = -0.25,
+              color = "black",
+              size = 4.5) +
+    labs(x = "Proportion (%)", y = NULL) +
+    theme_bw() +
+    scale_x_continuous(limits = c(0, 35)) +
+    ggtitle("Issues hindering reproducibility") +
+    theme(axis.text = element_text(size = 14))
+```
+:::
+
+::::
+
+## Reproducibility in computational research
+
+More examples:
+
+:::{.fragment}
+- Trisovic _et al_ (2022) found that only 26% of R files in the Harvard
+  Dataverse could be executed as-is.^[*A large-scale study on research code quality and execution. Scientific Data 9.1 (2022): 60.*]
+:::
+
+:::{.fragment}
+- Sheeba & Mietchen (2024) found that only 8% of Jupyter notebooks used in
+  publications executed without errors.^[*Computational reproducibility of Jupyter notebooks from biomedical publications. GigaScience 13 (2024): giad113.*]
+:::
+
+:::{.fragment}
+
+- Missing dependencies
+- Missing variables
+- Incorrect file/directory structure
+
+:::
+
+## Implications for research
+
+<br>
+<br>
+<br>
+<br>
+
+::: {.large}
+> Innovation points out paths that are possible; replication points out paths
+> that are likely; progress relies on both. ^[*"Estimating the reproducibility of psychological science". Science. 349*]
+:::
+
+## What does reproducible research mean?
+
+<br>
+<br>
+<br>
+
+::: {.r-stack}
+
+::: {.fragment .fade-out fragment-index=2}
+::: {.fragment fragment-index=1}
+::: {.large}
+<table>
+<tr>
+  <td colspan="2" bgcolor="#FFFFFF" style="border-bottom: none"></td>
+  <td colspan="2" align="center" bgcolor="#6DAD2A">Data</td>
+</tr>
+  <td colspan="2" bgcolor="#FFFFFF"></td>
+  <td align="center" bgcolor="#A3CF76">Same</td>
+  <td align="center" bgcolor="#A3CF76">Different</td>
+</tr>
+<tr>
+  <td rowspan="2" bgcolor="#6DAD2A">Code</td>
+  <td align="center" bgcolor="#A3CF76">Same</td>
+  <td align="center" bgcolor="#CFE6B8">Reproducible</td>
+  <td align="center" bgcolor="#CFE6B8">Replicable</td>
+</tr>
+<tr>
+  <td align="center" bgcolor="#A3CF76">Different</td>
+  <td align="center" bgcolor="#CFE6B8">Robust</td>
+  <td align="center" bgcolor="#CFE6B8">Generalisable</td>
+</tr>
+</table>
+:::
+:::
+:::
+
+::: {.fragment fragment-index=2}
+![](../../pages/images/reproducibility_overview.png){width=600px}
+:::
+
+:::
+
+## How are you handling your [data]{.green}?
+
+::: {.fragment}
+[Decent:]{.light-grey}
+
+- Data available on request
+- All metadata required for generating the results available
+:::
+
+::: {.fragment}
+[Good:]{.light-grey}
+
+- Raw data deposited in public repositories
+- If the raw data needed preprocessing, scripts were used rather than modifying
+  it manually
+:::
+
+::: {.fragment}
+[Great:]{.light-grey}
+
+- Section in the paper or online repository (_e.g._ GitHub) to aid in
+  reproduction
+- Used non-proprietary and machine-readable formats, *e.g.* `.csv` rather than
+  `.xls`.
+:::
+
+::: {.aside}
+*If you want to learn more about data management in-depth, NBIS has a course for
+you: [Introduction to Data Management Practices]{.green}*
+:::
+
+## How are you handling your [code]{.green}?
+
+::: {.fragment}
+[Decent:]{.light-grey}
+
+- All code for generating results from processed data available on request
+:::
+
+::: {.fragment}
+[Good:]{.light-grey}
+
+- All code for generating results from raw data is available
+- The code is publicly available with timestamps or tags
+:::
+
+
+::: {.fragment}
+[Great:]{.light-grey}
+
+- Code is documented and contains instructions for reproducing results
+- Seeds were used and documented for heuristic methods
+:::
+
+## How are you handling your [environment]{.green}?
+
+::: {.fragment}
+[Decent:]{.light-grey}
+
+- Key programs used are mentioned in the _materials and methods_ section
+:::
+
+::: {.fragment}
+[Good:]{.light-grey}
+
+- List of all programs used and their respective versions are available
+:::
+
+::: {.fragment}
+[Great:]{.light-grey}
+
+- Instructions for reproducing the whole environment publicly available
+:::
+
+## "What's in it for me?"
+
+::: {.fragment}
+[Before]{.green} the project:
+
+- Improved structure and organisation
+- Forced to think about scope and limitations
+:::
+
+::: {.fragment}
+[During]{.green} the project:
+
+- Easier to re-run analyses and generate results after updates and/or changes
+- Closer interaction between collaborators
+- Much of the manuscript "writes itself"
+:::
+
+
+::: {.fragment}
+[After]{.green} the project:
+
+- Faster resumption of research by others (or, more likely, your future self)
+- Increased visibility in the scientific community
+:::
+
+# Questions?
