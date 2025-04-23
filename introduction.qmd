@@ -105,7 +105,7 @@ ggplot(data, aes(stat = "identity",
 :::: {.columns}
 
 ::: {.column}
-In 2016, 1,576 scientists were surveyed about reproducibility. ^[*"1,500 scientists lift the lid on reproducibility". Nature 533: 452–454(2016)*]
+In 2016, 1576 scientists were surveyed about reproducibility. ^[*"1,500 scientists lift the lid on reproducibility". Nature 533: 452–454(2016)*]
 
 ::: {.small}
 - 90% agreed that there is a 'slight' or 'significant' reproducibility crisis
@@ -183,12 +183,6 @@ More examples:
 :::{.fragment}
 - Sheeba & Mietchen (2024) found that only 8% of Jupyter notebooks used in
   publications executed without errors.^[*Computational reproducibility of Jupyter notebooks from biomedical publications. GigaScience 13 (2024): giad113.*]
-:::
-
-:::{.fragment}
-- Missing dependencies
-- Missing variables
-- Incorrect file/directory structure
 :::
 
 ## Implications for research
@@ -271,11 +265,6 @@ More examples:
   `.xls`.
 :::
 
-::: {.aside}
-*If you want to learn more about data management in-depth, NBIS has a course for
-you: [Introduction to Data Management Practices]{.green}*
-:::
-
 ## How are you handling your [code]{.green}?
 
 ::: {.fragment}
@@ -336,7 +325,6 @@ you: [Introduction to Data Management Practices]{.green}*
 - Much of the manuscript "writes itself"
 :::
 
-
 ::: {.fragment}
 [After]{.green} the project:
 
@@ -344,12 +332,245 @@ you: [Introduction to Data Management Practices]{.green}*
 - Increased visibility in the scientific community
 :::
 
-## The Teachers
+## Working reproducibly: project organisation
 
-::: {layout-ncol=2 .justify-center}
-![John Sundh](images/john-sundh.png)
+The first step towards working reproducibly: [Get organised]{.green}!
 
-![Erik Fasterius](images/erik-fasterius.png)
+::: {.incremental}
+- Divide your work into [distinct projects]{.green}, one directory per project
+- Each project should have everything needed to go from raw data to final result
+  in an organised [directory structure]{.green}
+- Always be sure to [document]{.green} your work
+- There is no one-size-fits-all, but [be consistent]{.green} with your own
+  structure
 :::
+
+::: {.fragment}
+<br>
+An example of a simple but functional single-project directory structure:
+
+```{.bash code-line-numbers="false"}
+code/             Code needed to go from input files to final results
+data/             Raw data - this should never edited
+doc/              Documentation of the project
+env/              Environment files, e.g. Conda environments or Dockerfiles
+results/          Output from workflows and analyses
+README.md         Project description and instructions
+```
+:::
+
+## Group discussion \#1
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
+::: {.justify-center style="font-size:1.2em"}
+Have you ever [tried to reproduce]{.green} an analysis (even only partially),
+either your own or somebody else's? How did it go?
+
+<br>
+
+What are you [currently]{.green} doing in terms of reproducibility, if anything?
+Do you feel that you are organised?
+:::
+
+## Working reproducibly: the tools {.nostretch}
+
+<br>
+<br>
+
+::: {.justify-center}
+![](images/reproducibility_overview_with_logos.png){width=700px}
+:::
+
+## Version control with Git
+
+::: {.nostretch .justify-center}
+![](https://git-scm.com/images/logos/downloads/Git-Logo-2Color.png){width=25%}
+:::
+
+::: {.incremental}
+- A widely used system for distributed [version control]{.green}
+- Keeps a [complete history]{.green} of the changes you make to your files
+- Each point in the history can be re-visited and compared with others
+- Easily [fix mistakes]{.green} by reverting files to previous versions
+- Git tracks [who contributed what]{.green} to your code
+- Git can help you [backup]{.green} and [share]{.green} your code and documents
+:::
+
+## Manage your environment with Conda
+
+::: {.nostretch .justify-center}
+![](images/conda-logo.png){width=35%}
+:::
+
+::: {.incremental}
+- Conda is a package, dependency and environment manager
+  - [Package]{.green}: any type of program (_e.g._ MultiQC, Snakemake etc.)
+  - [Dependency]{.green}: other software required by a package (dependencies in
+    turn have their own dependencies)
+  - [Environment]{.green}: a distinct collection of packages
+- Specify software versions to be able to run your analyses consistently
+- Use software in environments that can be easily exported, shared and installed
+  on different systems
+:::
+
+## Control your environment with containers
+
+:::: {.columns .nostretch .justify-center}
+::: {.column}
+![](images/docker-logo.webp){width=30%}
+:::
+::: {.column}
+![](https://apptainer.org/docs/user/main/_static/logo.png){width=30%}
+:::
+::::
+
+::: {.incremental}
+- Docker and Apptainer lets you create and run applications securely isolated in
+  [containers]{.green}
+- Containers are [standardized packaging]{.green} for software, dependencies as
+  well as the _operating system_ itself
+- Containers allow for an even [higher degree of reproducibility]{.green}
+  compared to _e.g._ Conda and similar package managers
+- Containers are faster than _e.g._ Virtual Machines
+- Containers are now generally considered the [gold standard]{.green} for not
+  only scientific reproducibility, but also environment management in software
+  development at large
+:::
+
+## Create computational reports {.small}
+
+:::: {.columns .nostretch .justify-center}
+::: {.column}
+![](images/quarto-logo.png){width=75%}
+:::
+::: {.column}
+![](https://jupyter.readthedocs.io/en/latest/_static/_images/jupyter.svg){width=65%}
+:::
+::::
+
+:::: {.columns}
+::: {.column}
+::: {.fragment}
+````
+---
+title: "There's something about penguins"
+author: "John Doe, Joan Doe, Dyon Do"
+date: today
+format: html
+---
+
+# Palmer penguins
+
+```{{r Penguin figure}}
+#| fig-width: 10
+#| fig-height: 5
+library("ggplot2")
+library("palmerpenguins")
+data(penguins, package = "palmerpenguins")
+ggplot(penguins, aes(x      = bill_length_mm,
+                     y      = body_mass_g,
+                     colour = species)) +
+    geom_point(size = 2) +
+    theme_bw() +
+    labs(x      = "Bill length (mm)",
+         y      = "Body mass (g)",
+         colour = "Species") +
+    scale_colour_manual(values = c("#c1dea0", "#85be42", "#425f21"))
+```
+````
+:::
+:::
+
+::: {.column}
+::: {.fragment}
+![](images/example-report.png)
+:::
+:::
+::::
+
+## Create computational reports
+
+:::: {.columns .nostretch .justify-center}
+::: {.column}
+![](images/quarto-logo.png){width=75%}
+:::
+::: {.column}
+![](https://jupyter.readthedocs.io/en/latest/_static/_images/jupyter.svg){width=65%}
+:::
+::::
+
+::: {.incremental}
+- Connect code with results and [Markdown]{.green} documentation
+- Mix and match programming languages
+- [Reports]{.green}, [notebooks]{.green} and interactive documents
+- [Books]{.green}, [websites]{.green} and apps
+- [Presentations]{.green}
+:::
+
+## Create reproducible and scalable workflows
+
+::: {.r-stack}
+::: {.fragment .fade-out fragment-index=1}
+![](images/repr_scal_1.png)
+:::
+::: {.fragment fragment-index=1}
+![](images/repr_scal_2.png)
+:::
+:::
+
+## Create reproducible and scalable workflows
+
+::: {layout-ncol=2}
+![](images/snakemake-logo.png){width=25%}
+
+![](https://raw.githubusercontent.com/nextflow-io/trademark/master/nextflow-logo-bg-light.png){width=35%}
+:::
+
+::: {.incremental}
+- Automatically [track dependencies]{.green} between inputs and outputs
+- Easily [re-run]{.green} the parts of your analysis that has changed
+- [Scale]{.green} from a single sample to however many you like
+- Run on both laptops to HPC clusters and AWS
+- Are [language agnostic]{.green} in terms of the actual analyses you perform
+:::
+
+## Group discussion \#2
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+::: {.justify-center style="font-size:1.2em"}
+What are your [previous experience]{.green} with these tools?
+
+<br>
+
+Which of these tools do you think might be the [most useful]{.green} for you
+right now?
+:::
+
+## Learn more
+
+<br>
+
+If you want to learn more about working reproducibly you can take the NBIS
+advanced course [Tools for Reproducible Research]{.green}.
+
+<br>
+
+If you want to learn more about data management in-depth, NBIS has another
+course for you: [Introduction to Data Management Practices]{.green}.
+
+<br>
+
+Come to the NBIS [drop-in]{.green}!
 
 # Questions?
