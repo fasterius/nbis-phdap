@@ -562,12 +562,12 @@ right now?
 <br>
 
 If you want to learn more about working reproducibly you can take the NBIS
-advanced course [Tools for Reproducible Research]{.green}.
+advanced course [Tools for Reproducible Research](https://nbisweden.github.io/workshop-reproducible-research/)
 
 <br>
 
 If you want to learn more about data management in-depth, NBIS has another
-course for you: [Introduction to Data Management Practices]{.green}.
+course for you: [Introduction to Data Management Practices](https://uppsala.instructure.com/courses/91384)
 
 <br>
 
